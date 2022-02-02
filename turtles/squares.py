@@ -29,17 +29,20 @@ def simple_draw_a_square(x, y, size):
     t.showturtle()
     t.goto(x, y)
     t.setheading(0)
+    t.hideturtle()
     t.pd()
     for i in range(4):
         t.forward(size)
         t.right(90)
 
 
-def generate_initial_params():
-    x = random.randrange(-500, 500, 1)
-    y = random.randrange(-500, 500, 1)
+def generate_params(old_x, old_y, size, newseed):
+    if newseed:
+        random.seed(old_x + old_y)
+    x = random.randrange(old_x, old_x + size, 1)
+    y = random.randrange(old_y, old_y + size, 1)
     size = random.randrange(10, 100, 5)
-    print("initial params are: %s  %s  %s" % (x, y, size))
+    print("new params are: %s  %s  %s" % (x, y, size))
     return x, y, size
 
 
@@ -50,11 +53,19 @@ def main():
 
     # Non-Turtle setup
     random.seed(73)
-    total_squares = 10
+    total_squares = 100
 
-    for i in range(total_squares):
-        x, y, size = generate_initial_params()
-        simple_draw_a_square(x, y, size)
+    x, y, size = generate_params(-500, -500, 1000, False)
+    simple_draw_a_square(x, y, size)
+
+    for i in range(total_squares - 1):
+        x, y, size = generate_params(x, y, size, True)
+        if simple_check_in_bounds(x, y, size):
+            simple_draw_a_square(x, y, size)
+        else:
+            print("Out of bounds: %s  %s  %s " % (x, y, size))
+            break
+
     # Turtle Cleanup
     turtle.done()
 
